@@ -17,8 +17,21 @@ O projeto deve funcionar como uma agenda inteligente para Windows. Quando instal
 - edicao de profissional e agendamentos pelo relatorio;
 - alertas sonoros, visuais e notificacoes do navegador;
 - configuracoes de alerta pela engrenagem no topo;
+- login com usuario e senha;
+- banco local real via IndexedDB no navegador;
 - importacao e exportacao de dados em JSON;
-- armazenamento local no navegador.
+- migracao automatica de dados antigos do navegador.
+
+## Login padrao
+
+```text
+Login: agenda
+Senha: agenda2026
+```
+
+## Banco de dados
+
+O sistema usa IndexedDB, um banco de dados real embutido no navegador. Isso permite persistir clientes, profissionais, agendamentos, leads, observacoes e configuracoes mesmo depois de fechar e reabrir o navegador.
 
 ## Alertas
 
