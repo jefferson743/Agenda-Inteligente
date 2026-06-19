@@ -5,9 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Agenda Inteligente</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .login-shell {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .login-card {
+        width: min(420px, 100%);
+        display: grid;
+        gap: 14px;
+        padding: 24px;
+        border: 1px solid #dfe3ea;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 18px 50px rgba(15, 25, 45, 0.09);
+      }
+
+      .login-card label {
+        display: grid;
+        gap: 6px;
+        font-weight: 900;
+      }
+
+      .login-card input {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid #dfe3ea;
+        border-radius: 7px;
+        padding: 0 12px;
+      }
+
+      .login-error {
+        min-height: 20px;
+        margin: 0;
+        color: #b71645;
+        font-weight: 800;
+      }
+    </style>
   </head>
   <body>
-    <main id="appShell" class="app-shell">
+    <main id="loginShell" class="login-shell">
+      <form id="loginForm" class="login-card">
+        <p class="eyebrow">Acesso restrito</p>
+        <h1>Agenda Inteligente</h1>
+        <label>
+          Login
+          <input id="loginUser" type="text" autocomplete="username" required />
+        </label>
+        <label>
+          Senha
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="button primary" type="submit">Entrar</button>
+        <p id="loginError" class="login-error" role="alert"></p>
+      </form>
+    </main>
+
+    <main id="appShell" class="app-shell" hidden>
       <header class="page-header">
         <div>
           <p class="eyebrow">Sistema para Windows com clientes e alertas</p>
@@ -21,6 +78,7 @@
             <input id="importInput" type="file" accept="application/json" />
           </label>
           <button id="settingsButton" class="icon-button settings-button" type="button" aria-label="Configurações de alertas" title="Configurações de alertas">⚙</button>
+          <button id="logoutButton" class="button ghost" type="button">Sair</button>
         </div>
       </header>
 
@@ -268,6 +326,7 @@
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="auth-db.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
