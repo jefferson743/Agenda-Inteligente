@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agenda Inteligente</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="appShell" class="app-shell">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Sistema para Windows com clientes e alertas</p>
+          <h1 id="pageTitle">Agenda Inteligente</h1>
+        </div>
+        <div class="header-actions">
+          <button id="notifyButton" class="button ghost" type="button">Ativar alertas</button>
+          <button id="exportButton" class="button ghost" type="button">Exportar</button>
+          <label class="button ghost file-button">
+            Importar
+            <input id="importInput" type="file" accept="application/json" />
+          </label>
+          <button id="settingsButton" class="icon-button settings-button" type="button" aria-label="Configurações de alertas" title="Configurações de alertas">⚙</button>
+        </div>
+      </header>
+
+      <section class="top-grid" aria-label="Resumo rápido">
+        <div class="date-card">
+          <dl>
+            <div>
+              <dt>Hoje:</dt>
+              <dd id="todayLabel"></dd>
+            </div>
+            <div>
+              <dt>Amanhã:</dt>
+              <dd id="tomorrowLabel"></dd>
+            </div>
+            <div>
+              <dt>Depois de amanhã:</dt>
+              <dd id="afterTomorrowLabel"></dd>
+            </div>
+          </dl>
+        </div>
+
+        <div id="legendCard" class="legend-card">
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Controles da agenda">
+        <div class="month-controls">
+          <button id="prevMonth" class="icon-button" type="button" aria-label="Mês anterior">‹</button>
+          <input id="monthPicker" type="month" />
+          <button id="nextMonth" class="icon-button" type="button" aria-label="Próximo mês">›</button>
+        </div>
+        <button id="newAppointmentButton" class="button primary" type="button">Novo agendamento</button>
+        <button id="newClientButton" class="button secondary" type="button">Novo cliente</button>
+        <button id="newProfessionalButton" class="button ghost" type="button">Novo profissional</button>
+      </section>
+
+      <section class="table-wrap" aria-label="Calendário de agendamentos">
+        <table class="schedule-table">
+          <thead>
+            <tr id="calendarHead">
+              <th>Data</th>
+              <th>Dia da semana</th>
+              <th>Leads captados</th>
+            </tr>
+          </thead>
+          <tbody id="calendarBody"></tbody>
+        </table>
+      </section>
+
+      <section class="bottom-grid">
+        <div class="summary-card">
+          <h2>Resumo do mês</h2>
+          <div id="metricGrid" class="metric-grid">
+            <div>
+              <span>Leads captados</span>
+              <strong id="leadsTotal">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes-card">
+          <h2>Observações</h2>
+          <textarea id="notesInput" rows="4" placeholder="Anote detalhes importantes do mês..."></textarea>
+        </div>
+      </section>
+
+      <aside class="client-panel" aria-label="Clientes cadastrados">
+        <div class="panel-title">
+          <h2>Clientes</h2>
+          <span id="clientCount">0 cadastrados</span>
+        </div>
+        <input id="clientSearch" class="search-input" type="search" placeholder="Buscar cliente..." />
+        <div id="clientList" class="client-list"></div>
+      </aside>
+
+      <aside class="client-panel" aria-label="Profissionais cadastrados">
+        <div class="panel-title">
+          <h2>Profissionais</h2>
+          <span id="professionalCount">0 cadastrados</span>
+        </div>
+        <div id="professionalList" class="client-list"></div>
+      </aside>
+    </main>
+
+    <main id="professionalReport" class="app-shell report-shell" hidden>
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Relatório do profissional</p>
+          <h1 id="reportTitle">Relatório</h1>
+        </div>
+        <div class="header-actions">
+          <button id="backToAgendaButton" class="button ghost" type="button">Voltar para agenda</button>
+          <button id="editReportProfessionalButton" class="button secondary" type="button">Editar profissional</button>
+          <button id="printReportButton" class="button ghost" type="button">Imprimir</button>
+        </div>
+      </header>
+
+      <section id="reportMetricGrid" class="metric-grid report-metrics" aria-label="Métricas do profissional"></section>
+
+      <section class="bottom-grid report-grid">
+        <div class="summary-card">
+          <h2>Últimos agendamentos</h2>
+          <div id="lastAppointmentsList" class="report-list"></div>
+        </div>
+        <div class="summary-card">
+          <h2>Resumo inteligente</h2>
+          <div id="professionalInsights" class="insight-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="appointmentDialog">
+      <form id="appointmentForm" method="dialog" class="dialog-form">
+        <h2 id="appointmentDialogTitle">Novo agendamento</h2>
+        <input id="appointmentId" type="hidden" />
+        <label>
+          Cliente
+          <select id="appointmentClient" required></select>
+        </label>
+        <label>
+          Data
+          <input id="appointmentDate" type="date" required />
+        </label>
+        <label>
+          Horário
+          <input id="appointmentTime" type="time" required />
+        </label>
+        <label>
+          Profissional
+          <select id="appointmentDoctor" required></select>
+        </label>
+        <label>
+          Alerta
+          <select id="appointmentReminder">
+            <option value="10">10 minutos antes</option>
+            <option value="30">30 minutos antes</option>
+            <option value="60">1 hora antes</option>
+            <option value="1440">1 dia antes</option>
+          </select>
+        </label>
+        <label>
+          Observação
+          <textarea id="appointmentNotes" rows="3"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button id="deleteAppointmentButton" class="button danger" type="button">Excluir</button>
+          <span></span>
+          <button class="button ghost" type="button" data-close>Cancelar</button>
+          <button class="button primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="professionalDialog">
+      <form id="professionalForm" method="dialog" class="dialog-form">
+        <h2 id="professionalDialogTitle">Novo profissional</h2>
+        <input id="professionalId" type="hidden" />
+        <label>
+          Nome
+          <input id="professionalName" type="text" placeholder="Dra. Nome" required />
+        </label>
+        <fieldset class="weekday-fieldset">
+          <legend>Dias de atendimento</legend>
+          <label><input type="checkbox" name="professionalDays" value="1" /> Segunda</label>
+          <label><input type="checkbox" name="professionalDays" value="2" /> Terça</label>
+          <label><input type="checkbox" name="professionalDays" value="3" /> Quarta</label>
+          <label><input type="checkbox" name="professionalDays" value="4" /> Quinta</label>
+          <label><input type="checkbox" name="professionalDays" value="5" /> Sexta</label>
+          <label><input type="checkbox" name="professionalDays" value="6" /> Sábado</label>
+          <label><input type="checkbox" name="professionalDays" value="0" /> Domingo</label>
+        </fieldset>
+        <label class="inline-check">
+          <input id="professionalVisible" type="checkbox" />
+          Mostrar coluna na agenda mesmo sem agendamento
+        </label>
+        <div class="dialog-actions">
+          <button id="deleteProfessionalButton" class="button danger" type="button">Excluir</button>
+          <span></span>
+          <button class="button ghost" type="button" data-close>Cancelar</button>
+          <button class="button primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="clientDialog">
+      <form id="clientForm" method="dialog" class="dialog-form">
+        <h2>Novo cliente</h2>
+        <input id="clientId" type="hidden" />
+        <label>
+          Nome
+          <input id="clientName" type="text" required />
+        </label>
+        <label>
+          Telefone
+          <input id="clientPhone" type="tel" placeholder="(00) 00000-0000" />
+        </label>
+        <label>
+          Origem do lead
+          <input id="clientSource" type="text" placeholder="Instagram, indicação, site..." />
+        </label>
+        <label>
+          Observação
+          <textarea id="clientNotes" rows="3"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button id="deleteClientButton" class="button danger" type="button">Excluir</button>
+          <span></span>
+          <button class="button ghost" type="button" data-close>Cancelar</button>
+          <button class="button primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog">
+      <form id="settingsForm" method="dialog" class="dialog-form">
+        <h2>Configurações de alertas</h2>
+        <label class="inline-check">
+          <input id="soundAlerts" type="checkbox" />
+          Alertas sonoros
+        </label>
+        <label class="inline-check">
+          <input id="visualAlerts" type="checkbox" />
+          Alertas visuais na tela
+        </label>
+        <label class="inline-check">
+          <input id="browserAlerts" type="checkbox" />
+          Notificações do Windows/navegador
+        </label>
+        <label>
+          Alerta padrão para novos agendamentos
+          <select id="defaultReminder">
+            <option value="10">10 minutos antes</option>
+            <option value="30">30 minutos antes</option>
+            <option value="60">1 hora antes</option>
+            <option value="1440">1 dia antes</option>
+          </select>
+        </label>
+        <div class="dialog-actions">
+          <button id="testAlertButton" class="button ghost" type="button">Testar alerta</button>
+          <span></span>
+          <button class="button ghost" type="button" data-close>Cancelar</button>
+          <button class="button primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
